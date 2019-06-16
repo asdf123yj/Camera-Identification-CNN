@@ -10,16 +10,15 @@ import torch.nn as nn
 from model import IdModel
 import os
 
-
 CAM_ID = {'iP6': 9, 'iP4s': 8, 'GalaxyS4': 7, 'GalaxyN3': 6, 'MotoNex6': 5,
-             'MotoMax': 4, 'HTC-1-M7': 3, 'MotoX': 2, 'Nex7': 1, 'LG5x': 0}
+          'MotoMax': 4, 'HTC-1-M7': 3, 'MotoX': 2, 'Nex7': 1, 'LG5x': 0}
 
 
 # From: http://blog.topspeedsnail.com/archives/1469
 def chunks(l, n):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(l), n):
-        yield l[i:i+n]
+        yield l[i:i + n]
 
 
 def eliminate_nan_inf(arr):
@@ -91,16 +90,17 @@ if __name__ == "__main__":
             train_fps = fps[inds] / len(inds)
             train_labels = labels[inds]
 
-            real_label = torch.zeros(size=(properties['batch_size'], len(cameras))).to(device)
+            real_label = torch.zeros(size=(len(inds), len(cameras))).to(device)
             result = model.forward(train_fps).to(device)
-            for i in range(properties['batch_size']):
+            for i in range(len(inds)):
                 real_label[i][CAM_ID[train_labels[i]]] = 1
             loss = l2_loss_func(real_label, result)
             loss.backward()
             optimizer.step()
 
+        print(f'====> epoch: {epoch}/{properties["epoch"]}, loss on train set: {loss}')
+
         if epoch % 5 == 0:
-            print(f'====> epoch: {epoch}/{properties["epoch"]}, loss on train set: {loss}')
             if not os.path.exists("checkpoint"):
                 os.mkdir("checkpoint")
 
