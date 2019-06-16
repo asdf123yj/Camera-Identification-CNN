@@ -65,6 +65,7 @@ if __name__ == "__main__":
     print('Generating fingerprints...')
     fps = []
     labels = []
+    count = 0
     for camera in cameras:
         imgs = img_collector.imgs[camera]
         for group in chunks(imgs, properties['group']):
@@ -72,9 +73,12 @@ if __name__ == "__main__":
             fp = eliminate_nan_inf(fp)
             fps.append(fp)
             labels.append(camera)
+        count += 1
+        print(f"==> {count/len(cameras)}%")
     print('Finished!')
 
     # Train NN
+    print("Training NN...")
     shuffled_inds = list(range(len(fps)))
     fps = torch.Tensor(np.transpose(np.array(fps), (0, 3, 1, 2))).to(device)  # Convert to arrays
     labels = np.array(labels)  # Convert to arrays
@@ -107,3 +111,4 @@ if __name__ == "__main__":
             model_out_path = f"checkpoint/LeNet5_epoch_{epoch}.pth"
             torch.save(model, model_out_path)
             print("Checkpoint saved to checkpoint/")
+    print("Finished!")
