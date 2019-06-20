@@ -108,7 +108,7 @@ if __name__ == "__main__":
             if not os.path.exists("checkpoint"):
                 os.mkdir("checkpoint")
 
-            model_out_path = f"checkpoint/LeNet5_epoch_{epoch}.pth"
+            model_out_path = f"checkpoint/Model_epoch_{epoch}.pth"
             torch.save(model, model_out_path)
             print("Checkpoint saved to checkpoint/")
     print("Finished!")
