@@ -91,7 +91,7 @@ if __name__ == "__main__":
     for epoch in range(properties['epoch']):
         ind_generator = chunks(shuffled_inds, properties['batch_size'])
         for inds in ind_generator:
-            train_fps = fps[inds] / len(inds) / 255.0
+            train_fps = fps[inds] / len(inds)
             train_labels = labels[inds]
 
             real_label = torch.zeros(size=(len(inds), len(cameras))).to(device)
