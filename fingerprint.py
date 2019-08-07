@@ -2,6 +2,8 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 from skimage.restoration import denoise_nl_means, estimate_sigma
+import tqdm
+import functions
 
 
 LG_SIZE = (4032, 3024)
@@ -31,6 +33,8 @@ def get_patches(img, rnum, cnum, patch_size):
 
 
 def get_fingerprint(imgs, cam):
+    print(f"Generating fingerprint for {cam}...")
+    tbar = tqdm.tqdm(total=len(imgs))
     numerator = 0
     dominator = 0
     cam_size = size_dict[cam]
@@ -50,15 +54,9 @@ def get_fingerprint(imgs, cam):
                 continue
         patches = get_patches(img, row_patches, col_patches, PATCH_SIZE)
         for patch in patches:
-            # Non-local denoising from: https://scikit-image.org/docs/dev/auto_examples/filters/plot_nonlocal_means.html
-            sigma_est = np.mean(estimate_sigma(patch, multichannel=True))
-            patch_kw = dict(patch_size=5,
-                            patch_distance=6,
-                            multichannel=True)
-            dst = denoise_nl_means(patch, h=0.6 * sigma_est, sigma=sigma_est,
-                                   fast_mode=True, **patch_kw)
-            w = patch - dst
+            w = np.stack([functions.extract_single(patch[:, :, i], levels=4) for i in range(3)]).transpose((1, 2, 0))
             numerator += w * patch
             dominator += patch ** 2
+        tbar.update(1)
 
     return numerator / dominator

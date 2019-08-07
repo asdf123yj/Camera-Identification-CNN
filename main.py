@@ -80,6 +80,7 @@ if __name__ == "__main__":
     # Train NN
     print("Training NN...")
     shuffled_inds = list(range(len(fps)))
+    print(np.array(fps).shape)
     fps = torch.Tensor(np.transpose(np.array(fps), (0, 3, 1, 2))).to(device)  # Convert to arrays
     labels = np.array(labels)  # Convert to arrays
     random.shuffle(shuffled_inds)
